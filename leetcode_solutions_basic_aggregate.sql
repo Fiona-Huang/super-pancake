@@ -10,4 +10,19 @@ SUM(CASE WHEN state = 'approved' THEN amount ELSE 0 END)AS approved_total_amount
 FROM Transactions
 GROUP BY month, country
 
--- Basic Aggregate Functions (Medium Difficulty) Immediate Food Delivery II
+-- Get Date differences
+DATEDIFF(year, ‘2022-01-01', ‘2022-01-02')
+DATEDIFF(day, ‘2022-01-01', ‘2022-01-02')
+
+-- Get top country with orders
+SELECT 
+*
+FROM (
+  SELECT 
+  orders.date,
+  orders.country,
+  order_count,
+  FIRST_VALUE(order_count) OVER (PARTITION BY date, country ORDER BY order_count DESC) AS top_order
+  FROM orders
+  )
+WHERE order_count = top_order
