@@ -1,4 +1,4 @@
--- Advanced Select and Joins Medium Difficulty Product Price at a Given Date
+-- Advanced Select and Joins (Medium Difficulty) Product Price at a Given Date
 -- find prices of all products on 16 Aug. Assume price of all products before any change is 10
 
 -- Input: 
@@ -53,4 +53,60 @@ FROM Products p
 LEFT JOIN product_level_relevant_changes c
 ON p.product_id = c.product_id
 
+-- Advanced Select and Joins (Medium Difficulty) Count Salary Categories
+-- Calculate number of bank accounts for each salary category
 
+-- Input: 
+-- Accounts table:
+-- +------------+--------+
+-- | account_id | income |
+-- +------------+--------+
+-- | 3          | 108939 |
+-- | 2          | 12747  |
+-- | 8          | 87709  |
+-- | 6          | 91796  |
+-- +------------+--------+
+-- Output: 
+-- +----------------+----------------+
+-- | category       | accounts_count |
+-- +----------------+----------------+
+-- | Low Salary     | 1              |
+-- | Average Salary | 0              |
+-- | High Salary    | 3              |
+-- +----------------+----------------+
+
+WITH account_level_with_salary_category AS (
+    SELECT
+    account_id,
+    income,
+    CASE WHEN income < 20000 THEN "Low Salary"
+    WHEN income >= 20000 AND income <= 50000 THEN "Average Salary"
+    ELSE "High Salary"
+    END AS category
+    FROM Accounts
+)
+
+, salary_category_by_account_counts AS (
+    SELECT
+    category,
+    COUNT(DISTINCT(account_id)) AS accounts_count
+    FROM account_level_with_salary_category
+    GROUP BY 1
+)
+
+, salary_category_table AS (
+    SELECT
+    "Low Salary" AS category
+    UNION ALL 
+    SELECT
+    "Average Salary" AS category
+    UNION ALL 
+    SELECT
+    "High Salary" AS category
+)
+
+SELECT
+a.category,
+IFNULL(b.accounts_count,0) AS accounts_count
+FROM salary_category_table a
+LEFT JOIN salary_category_by_account_counts b USING (category)
