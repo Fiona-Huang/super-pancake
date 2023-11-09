@@ -78,3 +78,49 @@ LEFT JOIN manager on manager.managerId = Employee.id
 WHERE manager.direct_reports > 4
 
 -- 
+-- Department Top Three Salaries
+
+-- Table: Employee
+
+-- +--------------+---------+
+-- | Column Name  | Type    |
+-- +--------------+---------+
+-- | id           | int     |
+-- | name         | varchar |
+-- | salary       | int     |
+-- | departmentId | int     |
+-- +--------------+---------+
+-- id is the primary key (column with unique values) for this table.
+-- departmentId is a foreign key (reference column) of the ID from the Department table.
+-- Each row of this table indicates the ID, name, and salary of an employee. It also contains the ID of their department.
+ 
+
+-- Table: Department
+
+-- +-------------+---------+
+-- | Column Name | Type    |
+-- +-------------+---------+
+-- | id          | int     |
+-- | name        | varchar |
+-- +-------------+---------+
+-- id is the primary key (column with unique values) for this table.
+-- Each row of this table indicates the ID of a department and its name.
+
+WITH ranked_salary_employee_level AS (
+    SELECT
+    id,
+    name,
+    salary,
+    departmentId,
+    DENSE_RANK() OVER (PARTITION BY departmentId ORDER BY salary DESC) AS salary_rank
+    FROM Employee
+)
+
+SELECT 
+d.name AS Department,
+r.name AS Employee,
+r.salary AS Salary
+FROM ranked_salary_employee_level r
+LEFT JOIN Department d
+ON r.departmentId = d.id
+WHERE r.salary_rank <= 3
