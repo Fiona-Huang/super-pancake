@@ -124,10 +124,7 @@ FROM ranked_salary_employee_level r
 LEFT JOIN Department d
 ON r.departmentId = d.id
 WHERE r.salary_rank <= 3
- 75 changes: 75 additions & 0 deletions75  
-leetcode_solutions_sort_group.sql
-Viewed
-@@ -0,0 +1,75 @@
+
 -- Product Sales Analysis III
 -- Table: Sales
 
